@@ -3,42 +3,18 @@ services:
     image: ghost:6-alpine
     restart: always
     environment:
+      # These refer to the Environment Variables tab
       database__client: mysql
       database__connection__host: ${database__connection__host}
       database__connection__user: ${database__connection__user}
       database__connection__password: ${database__connection__password}
       database__connection__database: ${database__connection__database}
       url: ${url}
+      # Required for Node.js to talk to MySQL 8 correctly
+      database__connection__charset: utf8mb4
     networks:
       - dokploy-network
 
 networks:
-  dokploy-network:
-    external: true
-
-  db:
-    image: mysql:8.0
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
-      MYSQL_USER: ${DATABASE_USER:-ghost}
-      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
-      MYSQL_DATABASE: ghost
-    volumes:
-      - mysql_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - ghost_network
-
-volumes:
-  ghost_data:
-  mysql_data:
-
-networks:
-  ghost_network:
   dokploy-network:
     external: true

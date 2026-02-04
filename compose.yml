@@ -3,12 +3,11 @@ services:
     image: ghost:6-alpine
     restart: always
     environment:
+      # The full connection URL you wanted to use
       database__client: mysql
-      database__connection__host: ghost-ghostbd-oez1li
-      database__connection__user: ghost_admin
-      database__connection__password: xs2UVmJXHEz1sOJ6AxkN
-      database__connection__database: ghost_blog
-      url: http://ghost-ghost-czroih-f6692d-151-247-197-185.traefik.me/
+      database__connection: "mysql://ghost_admin:xs2UVmJXHEz1sOJ6AxkN@ghost-ghostbd-oez1li:3306/ghost_blog"
+      # The blog URL
+      url: http://ghost-ghost-czroih-f6692d-151-247-197-185.traefik.me
     networks:
       - dokploy-network
 

@@ -3,18 +3,46 @@ services:
     image: ghost:6-alpine
     restart: always
     environment:
-      # These refer to the Environment Variables tab
       database__client: mysql
-      database__connection__host: ${database__connection__host}
+      database__connection__host: db
       database__connection__user: ${database__connection__user}
       database__connection__password: ${database__connection__password}
       database__connection__database: ${database__connection__database}
       url: ${url}
-      # Required for Node.js to talk to MySQL 8 correctly
-      database__connection__charset: utf8mb4
+    # Ghost needs to be on BOTH networks:
+    # 1. ghost_network to talk to the DB
+    # 2. dokploy-network for the Proxy (404 fix)
     networks:
+      - ghost_network
       - dokploy-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0
+    restart: always
+    # REQUIRED for Ghost to talk to MySQL 8
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: ${database__connection__password}
+      MYSQL_DATABASE: ${database__connection__database}
+      MYSQL_USER: ${database__connection__user}
+      MYSQL_PASSWORD: ${database__connection__password}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${database__connection__password}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - ghost_network
+
+volumes:
+  mysql_data:
 
 networks:
+  ghost_network:
   dokploy-network:
     external: true

@@ -3,13 +3,39 @@ services:
     image: ghost:6-alpine
     restart: always
     environment:
-      # The full connection URL you wanted to use
       database__client: mysql
-      database__connection: "mysql://ghost_admin:xs2UVmJXHEz1sOJ6AxkN@ghost-ghostbd-oez1li:3306/ghost_blog"
-      # The blog URL
+      database__connection__host: db
+      database__connection__user: ghost
+      database__connection__password: xs2UVmJXHEz1sOJ6AxkN
+      database__connection__database: ghost_prod
       url: http://ghost-ghost-czroih-f6692d-151-247-197-185.traefik.me
     networks:
       - dokploy-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: xs2UVmJXHEz1sOJ6AxkN
+      MYSQL_DATABASE: ghost_prod
+      MYSQL_USER: ghost
+      MYSQL_PASSWORD: xs2UVmJXHEz1sOJ6AxkN
+    volumes:
+      - ghost_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pxs2UVmJXHEz1sOJ6AxkN"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - dokploy-network
+
+volumes:
+  ghost_mysql_data:
 
 networks:
   dokploy-network:

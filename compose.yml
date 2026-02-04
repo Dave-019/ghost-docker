@@ -5,9 +5,9 @@ services:
     environment:
       database__client: mysql
       database__connection__host: db
-      database__connection__user: ghost
+      database__connection__user: ghost_admin
       database__connection__password: xs2UVmJXHEz1sOJ6AxkN
-      database__connection__database: ghost_prod
+      database__connection__database: ghost_blog
       url: http://ghost-ghost-czroih-f6692d-151-247-197-185.traefik.me
     networks:
       - dokploy-network
@@ -21,8 +21,8 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: xs2UVmJXHEz1sOJ6AxkN
-      MYSQL_DATABASE: ghost_prod
-      MYSQL_USER: ghost
+      MYSQL_DATABASE: ghost_blog
+      MYSQL_USER: ghost_admin
       MYSQL_PASSWORD: xs2UVmJXHEz1sOJ6AxkN
     volumes:
       - ghost_mysql_data:/var/lib/mysql

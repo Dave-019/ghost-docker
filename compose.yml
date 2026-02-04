@@ -1,42 +1,43 @@
+version: '3.1'
+
 services:
   ghost:
-    image: ghost:6-alpine
+    image: ghost:5-alpine
     restart: always
+    ports:
+      - 8080:2368
     environment:
+      # I added the URL from your screenshot. 
+      # If you buy a real domain later, change this line.
+      url: http://ghost-ghost-uhchwn-2dbec2-151-247-197-185.traefik.me/
+
+      # Database Configuration (Auto-filled)
       database__client: mysql
-      database__connection__host: ghost-ghostbd-oez1li
-      database__connection__user: ghost_admin
-      database__connection__password: xs2UVmJXHEz1sOJ6AxkN
-      database__connection__database: ghost_blog
-      url: http://ghost-ghost-czroih-f6692d-151-247-197-185.traefik.me
-    networks:
-      - dokploy-network
+      database__connection__host: db
+      database__connection__user: ghost_user
+      database__connection__password: MySecurePassword99!
+      database__connection__database: ghost_db
+      
+      # Production mode
+      NODE_ENV: production
+
+    volumes:
+      - ghost-content:/var/lib/ghost/content
     depends_on:
-      db:
-        condition: service_healthy
+      - db
 
   db:
     image: mysql:8.0
     restart: always
-    command: --default-authentication-plugin=mysql_native_password
     environment:
-      MYSQL_ROOT_PASSWORD: xs2UVmJXHEz1sOJ6AxkN
-      MYSQL_DATABASE: ghost_blog
-      MYSQL_USER: ghost_admin
-      MYSQL_PASSWORD: xs2UVmJXHEz1sOJ6AxkN
+      # Database Credentials (Matches the ghost service above)
+      MYSQL_USER: ghost_user
+      MYSQL_PASSWORD: MySecurePassword99!
+      MYSQL_DATABASE: ghost_db
+      MYSQL_ROOT_PASSWORD: RootSuperSecretPassword77!
     volumes:
-      - ghost_mysql_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pxs2UVmJXHEz1sOJ6AxkN"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-    networks:
-      - dokploy-network
+      - ghost-mysql:/var/lib/mysql
 
 volumes:
-  ghost_mysql_data:
-
-networks:
-  dokploy-network:
-    external: true
+  ghost-content:
+  ghost-mysql:

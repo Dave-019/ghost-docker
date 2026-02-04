@@ -3,22 +3,18 @@ services:
     image: ghost:6-alpine
     restart: always
     environment:
-      NODE_ENV: production
-      # Dokploy will fill the DOMAIN variable if you add it to Env Vars
-      url: http://${DOMAIN}
       database__client: mysql
-      database__connection__host: db
-      database__connection__user: ${DATABASE_USER:-ghost}
-      database__connection__password: ${DATABASE_PASSWORD}
-      database__connection__database: ghost
-    volumes:
-      - ghost_data:/var/lib/ghost/content
-    depends_on:
-      db:
-        condition: service_healthy
+      database__connection__host: ${database__connection__host}
+      database__connection__user: ${database__connection__user}
+      database__connection__password: ${database__connection__password}
+      database__connection__database: ${database__connection__database}
+      url: ${url}
     networks:
-      - ghost_network
       - dokploy-network
+
+networks:
+  dokploy-network:
+    external: true
 
   db:
     image: mysql:8.0

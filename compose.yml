@@ -9,6 +9,7 @@ services:
       database__connection__password: ${database__connection__password}
       database__connection__database: ${database__connection__database}
       url: ${url}
+      database__connection__authSwitchHandler: "true"
     # Ghost needs to be on BOTH networks:
     # 1. ghost_network to talk to the DB
     # 2. dokploy-network for the Proxy (404 fix)
